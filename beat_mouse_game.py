@@ -4,17 +4,19 @@ pygame.init ()
 pygame.display.set_caption("Đập chuột")
 screen = pygame.display.set_mode((900,768))
 
-icon = pygame.image.load(r'FileGame\assets\icon_flappybird.jpg')
+#icon game
+icon = pygame.image.load(r'Image\icon.jpeg')
 pygame.display.set_icon(icon)
 
-bg = pygame.image.load(r'D:\HK232\Game\LTGame\Image\UI_down.png')
+#create background
+bg = pygame.image.load(r'Image\UI_down.png')
 bg = pygame.transform.scale(bg,(900,768))
 
-bg2 = pygame.image.load(r'D:\HK232\Game\LTGame\Image\UI_up.png')
+bg2 = pygame.image.load(r'Image\UI_up.png')
 bg2 = pygame.transform.scale(bg2,(900,230))
 
 
-mouse = pygame.image.load(r'D:\HK232\Game\LTGame\Image\Mouse.png')
+mouse = pygame.image.load(r'Image\Mouse.png')
 mouse = pygame.transform.scale(mouse,(110,110))
 
 
