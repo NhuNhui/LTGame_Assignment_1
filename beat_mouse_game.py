@@ -5,6 +5,7 @@ import random
 ### START
 pygame.init ()
 
+############## set background game ####################
 pygame.display.set_caption("Game Đập chuột")
 screen = pygame.display.set_mode((900,768))
 x_screen = 900
@@ -19,6 +20,9 @@ bg = pygame.transform.scale(bg,(x_screen,768))
 bg2 = pygame.image.load(r'Image\UI_up.png')
 bg2 = pygame.transform.scale(bg2,(x_screen,230))
 
+############## end set background ######################
+
+############# set mouse and hole ###########################
 # Mouse
 mouse = pygame.image.load(r'Image\Mouse.png')
 mouse = pygame.transform.scale(mouse,(110,110))
@@ -29,13 +33,17 @@ for hole in holes:
     hole[0] += 55
     hole[1] += 55
     
+hole_mouse = []
+for hole in holes:
+    hole_mouse.append(mouse.get_rect(center = (hole[0],hole[1])))
+    
 hole_list = []
 for hole in holes:
     top, down, left, right = hole[1] - 55, hole[1] + 55, hole[0] - 55, hole[0] + 55 
     hole_list.append([top,down,left,right])
 
 list_mouse_appear = []
-
+hole_have_mouse = []
 # for hole in holes:
 #     # print(i)
 #     random_mouse = mouse.get_rect(center = (hole[0],hole[1]))
@@ -46,6 +54,7 @@ def display_mouse():
     for mouse_appear in list_mouse_appear:
         screen.blit(mouse,mouse_appear)
 
+################## end set mouse and hole ############################
 
 #Hammer
 hammer = pygame.image.load(r'Image\Hammer.png')
@@ -53,8 +62,8 @@ hammer = pygame.transform.scale(hammer,(90,90))
 hammer_rect = hammer.get_rect(center=(x_screen/2,y_screen/2))
 
 #sound Hammer
-click_sound = pygame.mixer.Sound(r'D:\HK232\Game\LTGame\Assignment_1\Sound\sfx_wing.wav') 
-hit_sound = pygame.mixer.Sound(r'D:\HK232\Game\LTGame\Assignment_1\Sound\sfx_hit.wav') 
+click_sound = pygame.mixer.Sound(r'Sound\sfx_wing.wav') 
+hit_sound = pygame.mixer.Sound(r'Sound\sfx_hit.wav') 
 #Score
 score = 0
 score_font = pygame.font.Font(None,72)
@@ -72,7 +81,7 @@ flag_disappear = 0
 
 
 ######################### game loop ###########################
-counter = -1
+counter_list = []
 run = True
 while run:
     for event in pygame.event.get():
@@ -82,28 +91,38 @@ while run:
         if(event.type == timer_interrup):    
             flag_appear += 1
             flag_disappear += 1
-            if(flag_appear >= 7): #mỗi 700s sẽ xuất hiện con chuột
+            if(flag_appear >= 10): #mỗi 700s sẽ xuất hiện con chuột
                 flag_appear = 0
                 #todo
                 counter = random.randint(0,12)
-                list_mouse_appear.append(mouse.get_rect(center = (holes[counter][0],holes[counter][1])))
+                counter_list.append(counter)
+                
+                list_mouse_appear.append(hole_mouse[counter])
+                hole_have_mouse.append(hole_list[counter])
             
-            if(flag_disappear >= 10): #con chuột xuất hiện mỗi 1000s r biến mất  
+            if(flag_disappear >= 20): #con chuột xuất hiện mỗi 1000s r biến mất  
                 flag_disappear = 0
-                list_mouse_appear.pop(0)
-            
+                if(len(list_mouse_appear) > 0):
+                    list_mouse_appear.pop(0)
+                if(len(hole_have_mouse) > 0):
+                    hole_have_mouse.pop(0)
         
             
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Xử lý khi có click chuột
             click_sound.play()
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            for hole in hole_list:
+            for hole in hole_have_mouse:
                 #xử lí khi đập trúng chuột
                 if (mouse_x >= hole[2] and mouse_x <= hole[3]) and (mouse_y >= hole[0] and mouse_y <= hole[1]):
                     score += 1
                     print(f'Score: {score}')
                     hit_sound.play()
+                    # xử lí sau khi đập
+                    index_delete = hole_list.index(hole)
+                    hole_have_mouse.remove(hole)
+                    list_mouse_appear.remove(hole_mouse[index_delete])
+                    break
             
             
     #draw background     
