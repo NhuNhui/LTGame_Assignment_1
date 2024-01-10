@@ -36,11 +36,15 @@ for hole in holes:
 
 list_mouse_appear = []
 
-for hole in holes:
-    # print(i)
-    random_mouse = mouse.get_rect(center = (hole[0],hole[1]))
-    list_mouse_appear.append(random_mouse)
+# for hole in holes:
+#     # print(i)
+#     random_mouse = mouse.get_rect(center = (hole[0],hole[1]))
+#     list_mouse_appear.append(random_mouse)
 # print(hole_list)
+
+def display_mouse():
+    for mouse_appear in list_mouse_appear:
+        screen.blit(mouse,mouse_appear)
 
 
 #Hammer
@@ -60,10 +64,14 @@ def display_score():
 
 
 #set timer
-timer = pygame.USEREVENT
-pygame.time.set_timer(timer,1000)
+timer_interrup = pygame.USEREVENT
+pygame.time.set_timer(timer_interrup,100)
 
-#game loop
+flag_appear = 0
+flag_disappear = 0
+
+
+######################### game loop ###########################
 counter = -1
 run = True
 while run:
@@ -71,9 +79,20 @@ while run:
         if(event.type == pygame.QUIT):
             run = False
             
-        if(event.type == timer):      
-            counter = random.randint(0,12)
-            list_mouse_appear.append(hole_list[counter])
+        if(event.type == timer_interrup):    
+            flag_appear += 1
+            flag_disappear += 1
+            if(flag_appear >= 7): #mỗi 700s sẽ xuất hiện con chuột
+                flag_appear = 0
+                #todo
+                counter = random.randint(0,12)
+                list_mouse_appear.append(mouse.get_rect(center = (holes[counter][0],holes[counter][1])))
+            
+            if(flag_disappear >= 10): #con chuột xuất hiện mỗi 1000s r biến mất  
+                flag_disappear = 0
+                list_mouse_appear.pop(0)
+            
+        
             
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Xử lý khi có click chuột
@@ -92,9 +111,7 @@ while run:
     screen.blit(bg2,(0,0))
     
     #randon draw mouse
-    if(counter != -1):
-        mouse_rect = list_mouse_appear[counter]
-        screen.blit(mouse,mouse_rect)
+    display_mouse()
     
     
     #dwaw hammer
