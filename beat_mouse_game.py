@@ -4,7 +4,7 @@ import random
 
 ### START
 pygame.init ()
-
+pygame.mixer.init()
 ############## set background game ####################
 pygame.display.set_caption("Game Đập chuột")
 screen = pygame.display.set_mode((900,768))
@@ -21,6 +21,19 @@ bg2 = pygame.image.load(r'Image\UI_up.png')
 bg2 = pygame.transform.scale(bg2,(x_screen,230))
 
 ############## end set background ######################
+
+############## UI staer game ############################### -*- coding=utf-8 -*-
+start_game = pygame.image.load(r'D:\HK232\Game\LTGame\Assignment_1\Image\start_game_1.png')
+start_game_rect = start_game.get_rect(center=(x_screen/2,600))
+start_game = pygame.transform.scale(start_game,(210,91))
+
+start_game2 = pygame.image.load(r'D:\HK232\Game\LTGame\Assignment_1\Image\start_game_2.png')
+start_game2_rect = start_game2.get_rect(center=(x_screen/2,600))
+start_game2 = pygame.transform.scale(start_game2,(215,91))
+
+UI_start_game = pygame.image.load(r'D:\HK232\Game\LTGame\Assignment_1\Image\UI_start_game.jpg')
+UI_start_game = pygame.transform.scale(UI_start_game,(900,507))
+
 
 ############# set mouse and hole ###########################
 # Mouse
@@ -64,6 +77,8 @@ hammer_rect = hammer.get_rect(center=(x_screen/2,y_screen/2))
 #sound Hammer
 click_sound = pygame.mixer.Sound(r'Sound\sfx_wing.wav') 
 hit_sound = pygame.mixer.Sound(r'Sound\sfx_hit.wav') 
+back_ground_sound = pygame.mixer.Sound(r'D:\HK232\Game\LTGame\Assignment_1\Sound\01-FAIRY-TAIL-Main-Theme-Takanashi-Yasuharu.mp3') 
+back_ground_sound.set_volume(0.01)
 #Score
 score = 0
 score_font = pygame.font.Font(None,72)
@@ -82,13 +97,19 @@ pygame.time.set_timer(timer_interrup,100)
 flag_appear = 0
 flag_disappear = 0
 
+clock = pygame.image.load(r'Image\clock.png')
+clock = pygame.transform.scale(clock,(50,50))
 
-timer_countdown = 60
+timer_countdown = 5
 timer_countdown_font = pygame.font.Font(None,72)
 def display_timer_countdown():
-    text_timer_countdown = timer_countdown_font.render(str(timer_countdown),True,(0,0,0))
-    screen.blit(text_timer_countdown,(500,10))
-    
+    if(timer_countdown >= 60):  
+        text_timer_countdown = timer_countdown_font.render("01:00",True,(255,255,0))
+    else:
+        text_timer_countdown = timer_countdown_font.render("00:" + str(timer_countdown),True,(255,255,0))
+    screen.blit(text_timer_countdown,(300,12))
+
+start_game_display = True
 game_play = True
 
 ######################### game loop ###########################
@@ -99,7 +120,8 @@ while run:
         if(event.type == pygame.QUIT):
             run = False
             
-        if(event.type == timer_interrup and game_play):    
+            
+        if(event.type == timer_interrup and game_play and start_game_display == False):    
             flag_appear += 1
             flag_disappear += 1
             if(flag_appear >= 10): #mỗi 1s sẽ xuất hiện con chuột
@@ -122,52 +144,75 @@ while run:
             
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Xử lý khi có click chuột
+            if(start_game_display == False):
+                if(game_play):
+                    click_sound.play()
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    # print(f'mouse: x {mouse_x}, y {mouse_y}')
+                    for hole in hole_have_mouse:
+                        #xử lí khi đập trúng chuột
+                        if (mouse_x >= hole[2] and mouse_x <= hole[3]) and (mouse_y >= hole[0] and mouse_y <= hole[1]):
+                            score += 1
+                            print(f'Score: {score}')
+                            hit_sound.play()
+                            # xử lí sau khi đập
+                            index_delete = hole_list.index(hole)
+                            hole_have_mouse.remove(hole)
+                            list_mouse_appear.remove(hole_mouse[index_delete])
+                            break
+                else:
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    if(mouse_x > 317 and mouse_x < 400) and (mouse_y > 544 and mouse_y < 576):
+                        game_play = True
+                        score = 0
+                    if((mouse_x > 524 and mouse_x < 588) and (mouse_y > 543 and mouse_y < 577)):
+                        start_game_display = True
+                    # print(f'mouse: x {mouse_x}, y {mouse_y}')
             
-            if(game_play):
-                click_sound.play()
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                # print(f'mouse: x {mouse_x}, y {mouse_y}')
-                for hole in hole_have_mouse:
-                    #xử lí khi đập trúng chuột
-                    if (mouse_x >= hole[2] and mouse_x <= hole[3]) and (mouse_y >= hole[0] and mouse_y <= hole[1]):
-                        score += 1
-                        print(f'Score: {score}')
-                        hit_sound.play()
-                        # xử lí sau khi đập
-                        index_delete = hole_list.index(hole)
-                        hole_have_mouse.remove(hole)
-                        list_mouse_appear.remove(hole_mouse[index_delete])
-                        break
             else:
-                
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                if(mouse_x > 317 and mouse_x < 400) and (mouse_y > 544 and mouse_y < 576):
+                if (mouse_x >= 343 and mouse_x <= 557) and (mouse_y >= 555 and mouse_y <= 646):
+                    start_game_display = False
                     game_play = True
                     score = 0
-                if((mouse_x > 524 and mouse_x < 588) and (mouse_y > 543 and mouse_y < 577)):
-                    run = False
-                # print(f'mouse: x {mouse_x}, y {mouse_y}')
-            
-            
-    #draw background     
-    screen.blit(bg,(0,0))
-    screen.blit(bg2,(0,0))
-    if(game_play):
+                
+                
+       
+    #343 -> 557; 555 # y: 555 -> 646
+    #draw background
+    if(start_game_display):
+        back_ground_sound.play()   
+        white = (255, 255, 255)
+        screen.fill(white)
+        screen.blit(UI_start_game,(0,40))
+        screen.blit(start_game,start_game_rect)
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if(mouse_x >= 343 and mouse_x <= 557) and (mouse_y >= 555 and mouse_y <= 646):
+            screen.blit(start_game2,start_game2_rect)
         
-        #randon draw mouse
-        display_mouse()
-        
-        
-        #dwaw hammer
-        hammer_rect.center = pygame.mouse.get_pos()
-        screen.blit(hammer,hammer_rect)
-        display_score()
-        display_timer_countdown()
-        if(timer_countdown <= 0):
-            game_play = False
-            timer_countdown = 60
-    
     else:
-        screen.blit(gameOver,gameOver_rect)
+        back_ground_sound.stop()
+        screen.blit(bg,(0,0))
+        screen.blit(bg2,(0,0))
+        
+        if(game_play):
+            
+            #randon draw mouse
+            display_mouse()
+            screen.blit(clock,(235,10))
+            
+            #dwaw hammer
+            hammer_rect.center = pygame.mouse.get_pos()
+            screen.blit(hammer,hammer_rect)
+            display_score()
+            display_timer_countdown()
+            if(timer_countdown <= 0):
+                game_play = False
+                timer_countdown = 5
+        
+        else:
+            screen.blit(gameOver,gameOver_rect)
+            hole_have_mouse.clear()
+            list_mouse_appear.clear()
     
     pygame.display.update()
