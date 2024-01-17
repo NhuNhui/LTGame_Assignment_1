@@ -88,7 +88,7 @@ frame_threshold = 10
 # Flag to control animation
 play_animation = False
 show_static_hammer = True
-
+pygame.mouse.set_visible(False)
 #Score
 score = 0
 score_font = pygame.font.Font(None,72)
@@ -178,6 +178,7 @@ while run:
                             list_mouse_appear.remove(hole_mouse[index_delete])
                             break
                 else:
+                    
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     if(mouse_x > 317 and mouse_x < 400) and (mouse_y > 544 and mouse_y < 576):
                         game_play = True
@@ -187,6 +188,7 @@ while run:
                     # print(f'mouse: x {mouse_x}, y {mouse_y}')
             
             else:
+                
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if (mouse_x >= 343 and mouse_x <= 557) and (mouse_y >= 555 and mouse_y <= 646):
                     start_game_display = False
@@ -198,6 +200,7 @@ while run:
     #343 -> 557; 555 # y: 555 -> 646
     #draw background
     if(start_game_display):
+        pygame.mouse.set_visible(True)
         back_ground_sound.play()   
         white = (255, 255, 255)
         screen.fill(white)
@@ -247,6 +250,8 @@ while run:
                 
         
         else:
+            play_animation = False
+            pygame.mouse.set_visible(True)
             screen.blit(gameOver,gameOver_rect)
             hole_have_mouse.clear()
             list_mouse_appear.clear()
