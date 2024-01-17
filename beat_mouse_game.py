@@ -79,6 +79,16 @@ click_sound = pygame.mixer.Sound(r'Sound\sfx_wing.wav')
 hit_sound = pygame.mixer.Sound(r'Sound\sfx_hit.wav') 
 back_ground_sound = pygame.mixer.Sound(r'Sound\01-FAIRY-TAIL-Main-Theme-Takanashi-Yasuharu.mp3') 
 back_ground_sound.set_volume(0.01)
+#hammer animation
+original_hammer_frames  = [pygame.image.load(r'Animation\hammer_ani\0001.png'), pygame.image.load(r'Animation\hammer_ani\0002.png'), pygame.image.load(r'Animation\hammer_ani\0003.png'), pygame.image.load(r'Animation\hammer_ani\0004.png'),pygame.image.load(r'Animation\hammer_ani\0005.png')]
+hammer_frames = [pygame.transform.scale(frame, (90, 90)) for frame in original_hammer_frames]
+current_hammer_frame = 0
+frame_counter = 0
+frame_threshold = 10
+# Flag to control animation
+play_animation = False
+show_static_hammer = True
+
 #Score
 score = 0
 score_font = pygame.font.Font(None,72)
@@ -147,9 +157,14 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Xử lý khi có click chuột
             if(start_game_display == False):
-                if(game_play):
+                if game_play and not play_animation:
+                    play_animation = True
+                    show_static_hammer = False
                     click_sound.play()
                     mouse_x, mouse_y = pygame.mouse.get_pos()
+                    frame_counter = 0
+                    current_hammer_frame = 1
+                    
                     # print(f'mouse: x {mouse_x}, y {mouse_y}')
                     for hole in hole_have_mouse:
                         #xử lí khi đập trúng chuột
@@ -178,9 +193,8 @@ while run:
                     game_play = True
                     score = 0
                     timer_countdown = 60
-                
-                
-       
+                         
+
     #343 -> 557; 555 # y: 555 -> 646
     #draw background
     if(start_game_display):
@@ -194,6 +208,7 @@ while run:
             screen.blit(start_game2,start_game2_rect)
         
     else:
+        pygame.mouse.set_visible(False)
         back_ground_sound.stop()
         screen.blit(bg,(0,0))
         screen.blit(bg2,(0,0))
@@ -209,7 +224,23 @@ while run:
             
             #dwaw hammer
             hammer_rect.center = pygame.mouse.get_pos()
-            screen.blit(hammer,hammer_rect)
+            if show_static_hammer:
+                screen.blit(hammer,hammer_rect)
+            if play_animation:
+                # Draw the hammer with animation
+                screen.blit(hammer_frames[current_hammer_frame], hammer_rect)
+
+                # Update hammer animation frames
+                frame_counter += 1
+                if frame_counter >= frame_threshold:
+                    current_hammer_frame = (current_hammer_frame + 1) % len(hammer_frames)
+                    frame_counter = 0
+
+                # Stop the animation after playing once
+                if current_hammer_frame == 0:
+                    play_animation = False
+                    show_static_hammer = True
+            
             
             if(timer_countdown <= 0):
                 game_play = False
@@ -221,3 +252,4 @@ while run:
             list_mouse_appear.clear()
     
     pygame.display.update()
+pygame.mouse.set_visible(True)
