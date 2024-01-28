@@ -51,7 +51,9 @@ for hole in holes:
 hole_mouse = []
 for hole in holes:
     hole_mouse.append(mouse.get_rect(center = (hole[0],hole[1])))
-    
+
+ini_y = [mouse_rect.copy() for mouse_rect in hole_mouse]
+  
 hole_list = []
 for hole in holes:
     top, down, left, right = hole[1] - 55, hole[1] + 55, hole[0] - 55, hole[0] + 55 
@@ -59,19 +61,9 @@ for hole in holes:
 
 list_mouse_appear = []
 hole_have_mouse = []
-# for hole in holes:
-#     # print(i)
-#     random_mouse = mouse.get_rect(center = (hole[0],hole[1]))
-#     list_mouse_appear.append(random_mouse)
-# print(hole_list)
 
-def display_mouse():
-    for mouse_appear in list_mouse_appear:
-        screen.blit(mouse,mouse_appear)
-    
-def display_stunned_mouse():
-    for mouse_appear in list_mouse_appear:
-        screen.blit(stunned_mouse,mouse_appear)
+
+
 ################## end set mouse and hole ############################
 
 #Hammer
@@ -135,33 +127,72 @@ game_play = True
 
 ######################### game loop ###########################
 counter_list = []
+list_go_down = []
 run = True
 while run:
     for event in pygame.event.get():
         if(event.type == pygame.QUIT):
             run = False
-            
+
+        def display_mouse():
+            for mouse_appear in list_mouse_appear:
+                screen.blit(mouse,mouse_appear)
+        def display_stunned_mouse():
+            for mouse_appear in list_mouse_appear:
+                screen.blit(stunned_mouse,mouse_appear)    
             
         if(event.type == timer_interrup and game_play and start_game_display == False):    
             flag_appear += 1
             flag_disappear += 1
+            
             if(flag_appear >= 10): #mỗi 1s sẽ xuất hiện con chuột
                 timer_countdown -= 1
-                flag_appear = 0
-                #todo
+                flag_appear = 0        
                 counter = random.randint(0,12)
                 counter_list.append(counter)
-                
+
                 list_mouse_appear.append(hole_mouse[counter])
                 hole_have_mouse.append(hole_list[counter])
+                print("xuat hien o so")
+                print(counter)
             
-            if(flag_disappear >= 20): #con chuột xuất hiện mỗi 2s r biến mất  
+            for my in counter_list:
+                if hole_mouse[my].y + hole_mouse[my].height > holes[my][1]+40:
+                    hole_mouse[my].y -=4
+            
+            #counter list laf ddi len    
+            if(flag_disappear >= 20) and len(counter_list) > 2: #con chuột xuất hiện mỗi 2s r biến mất  
                 flag_disappear = 0
-                if(len(list_mouse_appear) > 0):
-                    list_mouse_appear.pop(0)
+                #print("go down")
+                #print(counter_list[0])
+                list_go_down.append(counter_list[0])
+                counter_list.pop(0)
+                    
                 if(len(hole_have_mouse) > 0):
                     hole_have_mouse.pop(0)
-        
+
+            delHoleInd=[]
+            if len(list_go_down) > 0:
+                for my in list_go_down:
+                    if hole_mouse[my].y < ini_y[my].y :
+                        hole_mouse[my].y += 8
+                    else:
+                        delHoleInd.append(my)
+                        #print("them o xoa")
+                        #print (my)
+
+
+            # del mouses in o so my
+            if len(delHoleInd) > 0:
+                for ind in delHoleInd:
+                    if(len(list_mouse_appear) > 0):
+                        list_mouse_appear.remove(hole_mouse[ind])
+                        #print("xoa o so")
+                        #print(ind)
+
+                    list_go_down.remove(ind)
+
+            delHoleInd.clear()
             
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Xử lý khi có click chuột
@@ -193,6 +224,8 @@ while run:
                             index_delete = hole_list.index(hole)
                             hole_have_mouse.remove(hole)
                             list_mouse_appear.remove(hole_mouse[index_delete])
+                            hole_mouse[index_delete].y=ini_y[index_delete].y
+                            counter_list.remove(index_delete)
                             break
                 else:
                     
