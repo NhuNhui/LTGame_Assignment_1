@@ -39,7 +39,7 @@ UI_start_game = pygame.transform.scale(UI_start_game,(900,507))
 # Mouse
 mouse = pygame.image.load(r'Image\Mouse.png')
 mouse = pygame.transform.scale(mouse,(110,110))
-stunned_mouse = pygame.image.load(r'Image\mouse stunned.jpg')
+stunned_mouse = pygame.image.load(r'Image\mouse stunned.png')
 stunned_mouse = pygame.transform.scale(stunned_mouse,(110,110))
 #hole position
 holes = [[75,180],[470,180],[740,180],[250,240],[430,300],[670,270]
@@ -183,7 +183,8 @@ while run:
                             second_time = pygame.time.get_ticks()
                             while second_time-first_time<300:
                                 display_stunned_mouse()
-                                pygame.display.update()                 
+                                pygame.display.update()
+                                second_time = pygame.time.get_ticks()                 
                             score += 1
                             print(f'Score: {score}')
                             hit_sound.play()
