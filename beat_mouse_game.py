@@ -39,6 +39,8 @@ UI_start_game = pygame.transform.scale(UI_start_game,(900,507))
 # Mouse
 mouse = pygame.image.load(r'Image\Mouse.png')
 mouse = pygame.transform.scale(mouse,(110,110))
+stunned_mouse = pygame.image.load(r'Image\mouse stunned.png')
+stunned_mouse = pygame.transform.scale(stunned_mouse,(110,110))
 #hole position
 holes = [[75,180],[470,180],[740,180],[250,240],[430,300],[670,270]
          ,[40,300],[210,420],[720,390],[90,540],[350,620],[690,570],[470,470]]
@@ -66,7 +68,10 @@ hole_have_mouse = []
 def display_mouse():
     for mouse_appear in list_mouse_appear:
         screen.blit(mouse,mouse_appear)
-
+    
+def display_stunned_mouse():
+    for mouse_appear in list_mouse_appear:
+        screen.blit(stunned_mouse,mouse_appear)
 ################## end set mouse and hole ############################
 
 #Hammer
@@ -104,6 +109,8 @@ gameOver_rect = gameOver.get_rect(center=(x_screen/2,y_screen/2))
 timer_interrup = pygame.USEREVENT
 pygame.time.set_timer(timer_interrup,100)
 
+start_time = pygame.time.get_ticks()
+
 flag_appear = 0
 flag_disappear = 0
 
@@ -123,6 +130,8 @@ def display_timer_countdown():
 
 start_game_display = True
 game_play = True
+
+
 
 ######################### game loop ###########################
 counter_list = []
@@ -169,9 +178,17 @@ while run:
                     for hole in hole_have_mouse:
                         #xử lí khi đập trúng chuột
                         if (mouse_x >= hole[2] and mouse_x <= hole[3]) and (mouse_y >= hole[0] and mouse_y <= hole[1]):
+                            first_time = pygame.time.get_ticks()
+                            
+                            second_time = pygame.time.get_ticks()
+                            while second_time-first_time<300:
+                                display_stunned_mouse()
+                                pygame.display.update()
+                                second_time = pygame.time.get_ticks()                 
                             score += 1
                             print(f'Score: {score}')
                             hit_sound.play()
+                            
                             # xử lí sau khi đập
                             index_delete = hole_list.index(hole)
                             hole_have_mouse.remove(hole)
