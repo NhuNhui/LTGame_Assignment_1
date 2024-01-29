@@ -74,8 +74,8 @@ hammer_rect = hammer.get_rect(center=(x_screen/2,y_screen/2))
 #sound Hammer
 click_sound = pygame.mixer.Sound(r'Sound\sfx_wing.wav') 
 hit_sound = pygame.mixer.Sound(r'Sound\sfx_hit.wav') 
-back_ground_sound = pygame.mixer.Sound(r'Sound\01-FAIRY-TAIL-Main-Theme-Takanashi-Yasuharu.mp3') 
-back_ground_sound.set_volume(0.01)
+back_ground_sound = pygame.mixer.Sound(r'Sound\Gunbound-15-nhac-game.mp3') 
+# back_ground_sound.set_volume(0.01)
 #hammer animation
 original_hammer_frames  = [pygame.image.load(r'Animation\hammer_ani\0001.png'), pygame.image.load(r'Animation\hammer_ani\0002.png'), pygame.image.load(r'Animation\hammer_ani\0003.png'), pygame.image.load(r'Animation\hammer_ani\0004.png'),pygame.image.load(r'Animation\hammer_ani\0005.png')]
 hammer_frames = [pygame.transform.scale(frame, (90, 90)) for frame in original_hammer_frames]
@@ -109,7 +109,7 @@ flag_disappear = 0
 clock = pygame.image.load(r'Image\clock.png')
 clock = pygame.transform.scale(clock,(50,50))
 
-timer_countdown = 60
+timer_countdown = 10
 timer_countdown_font = pygame.font.Font(None,72)
 def display_timer_countdown():
     if(timer_countdown >= 60):  
@@ -186,7 +186,8 @@ while run:
             if len(delHoleInd) > 0:
                 for ind in delHoleInd:
                     if(len(list_mouse_appear) > 0):
-                        list_mouse_appear.remove(hole_mouse[ind])
+                        if(hole_mouse[ind] in list_mouse_appear):
+                            list_mouse_appear.remove(hole_mouse[ind])
                         #print("xoa o so")
                         #print(ind)
 
@@ -228,13 +229,17 @@ while run:
                             counter_list.remove(index_delete)
                             break
                 else:
-                    
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     if(mouse_x > 317 and mouse_x < 400) and (mouse_y > 544 and mouse_y < 576):
                         game_play = True
                         score = 0
+                        timer_countdown = 10
+                        list_mouse_appear.clear()
+                        list_go_down.clear()
+                        play_animation = True
                     if((mouse_x > 524 and mouse_x < 588) and (mouse_y > 543 and mouse_y < 577)):
-                        start_game_display = True
+                        # start_game_display = True
+                        run = False
                     # print(f'mouse: x {mouse_x}, y {mouse_y}')
             
             else:
@@ -244,7 +249,8 @@ while run:
                     start_game_display = False
                     game_play = True
                     score = 0
-                    timer_countdown = 60
+                    timer_countdown = 10
+                    
                          
 
     #343 -> 557; 555 # y: 555 -> 646
